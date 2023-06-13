@@ -29,7 +29,7 @@ def find_mcps(G, T, r, parent=None):
             C.update([(r, s)])
             T.remove_edge(r, s)
 
-    # Apply reduction rule 4
+    # Apply reduction rule 3
     if T.degree(r) - has_parent >= 3:
         edges_to_add = T.degree(r) - has_parent - 2
         for s in S:
@@ -47,13 +47,13 @@ def main():
         file.write(f"{datetime.datetime.now()}\n")
         file.write(f"test, size, divconq size, divconq time\n")
 
-    for tree_size in [10, 100, 1000, 10000, 100000, 1000000]:
+    for tree_size in [10, 100, 1000, 10000]:
         for iteration in range(1000):
             tree = nx.random_tree(tree_size)
 
-            st = time.process_time()
+            st = time.time()
             divconq_mcps = find_mcps(tree, tree.copy(), 0)
-            divconq_time = time.process_time() - st
+            divconq_time = time.time() - st
             divconq_size = len(divconq_mcps)
 
             with open("mcps_divconq.txt", "a") as file:

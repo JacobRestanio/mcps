@@ -1,9 +1,11 @@
 import linprog_pulp as pulp
 import linprog_cplex as cplex
 import divconq
+import maxflow
 import networkx as nx
-import time
+import tracemalloc
 import datetime
+import time
 
 
 def is_path_set(G, cps):
@@ -18,34 +20,45 @@ def is_path_set(G, cps):
 
 def main():
     num_different = 0
-    with open("mpcsoutput.txt", "w") as file:
+    with open("mcps_memory.txt", "w") as file:
         file.write(f"{datetime.datetime.now()}\n")
-        file.write(f"test, tree size, divconq size, divconq time, pulp size, pulp time, cplex size, cplex time\n")
+        file.write(f"test, size, divconq, maxflow, cplex\n")
 
     for tree_size in [10, 100, 1000, 10000]:
-        for i in range(100):
+        for i in range(10):
             print(f"test #{i+1}, size {tree_size}")
             tree = nx.random_tree(tree_size)
 
+            tracemalloc.start()
             st = time.time()
             divconq_mcps = divconq.find_mcps(tree, tree.copy(), 0)
             divconq_time = time.time() - st
-            divconq_size = len(divconq_mcps)
+            current, divconq_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
+            tracemalloc.start()
             st = time.time()
-            pulp_mcps = pulp.find_mcps(tree)
-            pulp_time = time.time() - st
-            pulp_size = len(pulp_mcps)
+            maxflow_mcps = maxflow.find_mcps(tree)
+            maxflow_time = time.time() - st
+            current, maxflow_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
+            # tracemalloc.start()
+            # st = time.time()
+            # pulp_mcps = pulp.find_mcps(tree)
+            # pulp_time = time.time() - st
+            # current, pulp_mem = tracemalloc.get_traced_memory()
+            # tracemalloc.stop()
+
+            tracemalloc.start()
             st = time.time()
             cplex_mcps = cplex.find_mcps(tree)
             cplex_time = time.time() - st
-            cplex_size = len(cplex_mcps)
+            current, cplex_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
-            with open("mpcsoutput.txt", "a") as file:
-                file.write(
-                    f"{i+1}, {tree_size}, {divconq_size}, {divconq_time:.5f}, {pulp_size}, {pulp_time:.5f}, {cplex_size}, {cplex_time:.5f}\n"
-                )
+            with open("mcps_memory.txt", "a") as file:
+                file.write(f"{i+1}, {tree_size}, {divconq_mem}, {maxflow_mem}, {cplex_mem}\n")
 
 
 if __name__ == "__main__":

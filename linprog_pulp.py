@@ -15,11 +15,12 @@ def find_mcps(G):
     # decision variables
     X = {(i, j): lp.LpVariable(name=f"x_({i},{j})", lowBound=0, upBound=1) for (i, j) in edge_list}
 
+    # objective
+    model += lp.lpSum(X.values())
+
     # constraints
     for n in node_list:
         model += (lp.lpSum([x for (u, v), x in X.items() if (u, v) in nx.edges(graph, nbunch=n)]) <= 2, f"{n}")
-
-    model += lp.lpSum(X.values())
 
     status = model.solve(lp.PULP_CBC_CMD(msg=False, timeLimit=1800))
 

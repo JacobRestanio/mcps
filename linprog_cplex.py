@@ -40,9 +40,9 @@ def main():
         for iteration in range(1000):
             tree = nx.random_tree(tree_size)
 
-            st = time.process_time()
+            st = time.time()
             cplex_mcps = find_mcps(tree)
-            cplex_time = time.process_time() - st
+            cplex_time = time.time() - st
             cplex_size = len(cplex_mcps)
 
             file.write(f"{iteration+1}, {tree_size}, {cplex_size}, {cplex_time}\n")
