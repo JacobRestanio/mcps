@@ -2,15 +2,18 @@
 Implementation of various algorithms for the maximum co-path set problem in trees.
 
 ## Dependencies
-You must have python3 installed https://www.python.org/downloads/.
+You must have python 3 installed:  
+https://www.python.org/downloads/.
 
 The project requires the following libraries:
 - networkx
 - PuLP
-    pip install networkx
-    pip install pulp
 
-The results cited are from using a CPLEX solver. If you do not have CPLEX, change from using the linprog_cplex.py file to using linprog_pulp.py. PuLP includes a free solver.
+To install those libraries, use pip.  
+`pip install networkx`  
+`pip install pulp`
+
+The results cited are from using a CPLEX solver. If you do not have CPLEX installed on your machine, change the import in main.py from linprog_cplex to linprog_pulp.
 
 ## Running the Experiments
-To rerun the experiments, run the main file `python3 ./main.py`
+To rerun the experiments, run the main file `python ./main.py`
