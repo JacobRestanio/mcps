@@ -1,4 +1,5 @@
 import networkx as nx
+import tracemalloc
 import time
 import datetime
 import sys
@@ -45,19 +46,23 @@ def main():
     sys.setrecursionlimit(10000)
     with open("mcps_divconq.txt", "w") as file:
         file.write(f"{datetime.datetime.now()}\n")
-        file.write(f"test, size, divconq size, divconq time\n")
+        file.write(f"test, size, divconq size, divconq time, divconq mem\n")
 
     for tree_size in [10, 100, 1000, 10000]:
-        for iteration in range(1000):
+        for i in range(1000):
+            print(f"test #{i+1}, size {tree_size}")
             tree = nx.random_tree(tree_size)
 
+            tracemalloc.start()
             st = time.time()
             divconq_mcps = find_mcps(tree, tree.copy(), 0)
             divconq_time = time.time() - st
             divconq_size = len(divconq_mcps)
+            current, divconq_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
             with open("mcps_divconq.txt", "a") as file:
-                file.write(f"{iteration+1}, {tree_size}, {divconq_size}, {divconq_time}\n")
+                file.write(f"{i+1}, {tree_size}, {divconq_size}, {divconq_time}, {divconq_mem}\n")
 
 
 if __name__ == "__main__":

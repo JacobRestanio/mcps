@@ -6,6 +6,7 @@ import networkx as nx
 import tracemalloc
 import datetime
 import time
+import sys
 
 
 def is_path_set(G, cps):
@@ -19,6 +20,7 @@ def is_path_set(G, cps):
 
 
 def main():
+    sys.setrecursionlimit(10000)
     date = datetime.datetime.now()
     with open("mcps_results.txt", "w") as file:
         file.write(f"{date}\n")

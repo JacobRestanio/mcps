@@ -1,4 +1,5 @@
 import networkx as nx
+import tracemalloc
 import time
 import datetime
 
@@ -30,19 +31,23 @@ def find_mcps(tree):
 def main():
     with open("mcps_max_flow.txt", "w") as file:
         file.write(f"{datetime.datetime.now()}\n")
-        file.write(f"test, size, bmatching size, bmatching time\n")
+        file.write(f"test, size, maxflow size, maxflow time, maxflow mem\n")
 
     for tree_size in [10, 100, 1000, 10000]:
-        for iteration in range(1000):
+        for i in range(1000):
+            print(f"test #{i+1}, size {tree_size}")
             tree = nx.random_tree(tree_size)
 
+            tracemalloc.start()
             st = time.time()
-            bmatching_mcps = find_mcps(tree)
-            bmatching_time = time.time() - st
-            bmatching_size = len(bmatching_mcps)
+            maxflow_mcps = find_mcps(tree)
+            maxflow_time = time.time() - st
+            maxflow_size = len(maxflow_mcps)
+            current, maxflow_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
             with open("mcps_max_flow.txt", "a") as file:
-                file.write(f"{iteration+1}, {tree_size}, {bmatching_size}, {bmatching_time}\n")
+                file.write(f"{i+1}, {tree_size}, {maxflow_size}, {maxflow_time}, {maxflow_mem}\n")
 
 
 if __name__ == "__main__":

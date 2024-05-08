@@ -1,5 +1,6 @@
 import pulp as lp
 import networkx as nx
+import tracemalloc
 import time
 import datetime
 
@@ -34,19 +35,23 @@ def find_mcps(G):
 def main():
     with open("mcps_linprog_pulp.txt", "w") as file:
         file.write(f"{datetime.datetime.now()}\n")
-        file.write(f"test, size, linprog size, linprog time\n")
+        file.write(f"test, size, pulp size, pulp time, pulp mem\n")
 
     for tree_size in [10, 100, 1000, 10000]:
-        for iteration in range(1000):
+        for i in range(1000):
+            print(f"test #{i+1}, size {tree_size}")
             tree = nx.random_tree(tree_size)
 
+            tracemalloc.start()
             st = time.process_time()
-            linprog_mcps = find_mcps(tree)
-            linprog_time = time.process_time() - st
-            linprog_size = len(linprog_mcps)
+            pulp_mcps = find_mcps(tree)
+            pulp_time = time.process_time() - st
+            pulp_size = len(pulp_mcps)
+            current, pulp_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
             with open("mcps_linprog_pulp.txt", "a") as file:
-                file.write(f"{iteration+1}, {tree_size}, {linprog_size}, {linprog_time}\n")
+                file.write(f"{i+1}, {tree_size}, {pulp_size}, {pulp_time}, {pulp_mem}\n")
 
 
 if __name__ == "__main__":
