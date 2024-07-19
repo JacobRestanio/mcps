@@ -17,3 +17,5 @@ The results cited are from using a CPLEX solver. If you do not have CPLEX instal
 
 ## Running the Experiments
 To rerun the experiments, run the main file `python ./main.py`
+
+Each algorithm can be run individually as well, e.g. `python ./divcong.py`
