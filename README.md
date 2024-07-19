@@ -1,5 +1,5 @@
-# MCPS Tree Implementation
-Implementation of various algorithms for the maximum co-path set problem in trees.
+# MPS Tree Implementation
+Implementation of various algorithms for the maximum path set problem in trees.
 
 ## Dependencies
 You must have python 3 installed:  
