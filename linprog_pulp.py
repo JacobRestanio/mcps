@@ -5,10 +5,9 @@ import time
 import datetime
 
 
-def find_mcps(G):
-    graph = G.copy()
-    node_list = list(graph.nodes)
-    edge_list = list(graph.edges)
+def find_mcps(T):
+    node_list = list(T.nodes)
+    edge_list = list(T.edges)
     C = set()
 
     model = lp.LpProblem(name="mps-problem", sense=lp.LpMaximize)
@@ -21,12 +20,12 @@ def find_mcps(G):
 
     # constraints
     for n in node_list:
-        model += (lp.lpSum([x for (u, v), x in X.items() if (u, v) in nx.edges(graph, nbunch=n)]) <= 2, f"{n}")
+        model += (lp.lpSum([x for (u, v), x in X.items() if (u, v) in nx.edges(T, nbunch=n)]) <= 2, f"{n}")
 
     status = model.solve(lp.PULP_CBC_CMD(msg=False, timeLimit=1800))
 
     for (u, v), x in X.items():
-        if x.value() == 0:
+        if x.value() == 1:
             C.update([(u, v)])
 
     return C

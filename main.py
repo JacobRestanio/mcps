@@ -1,6 +1,6 @@
 # import linprog_pulp as solver
 import linprog_cplex as solver
-import divconq
+import iterative_recursive as iter_rec
 import maxflow
 import networkx as nx
 import tracemalloc
@@ -20,50 +20,67 @@ def is_path_set(G, cps):
 
 
 def main():
-    sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(10000000)
     date = datetime.datetime.now()
     with open("mcps_results.txt", "w") as file:
         file.write(f"{date}\n")
-        file.write(f"test, size, divconq, maxflow, cplex\n")
+        file.write(f"test, size, recursive, iterative, maxflow, cplex\n")
     with open("mcps_time.txt", "w") as file:
         file.write(f"{date}\n")
-        file.write(f"test, size, divconq, maxflow, cplex\n")
+        file.write(f"test, size, recursive, iterative, maxflow, cplex\n")
     with open("mcps_memory.txt", "w") as file:
         file.write(f"{date}\n")
-        file.write(f"test, size, divconq, maxflow, cplex\n")
+        file.write(f"test, size, recursive, iterative, maxflow, cplex\n")
 
-    for tree_size in [10, 100, 1000, 10000]:
-        for i in range(1000):
+    for tree_size in [100, 1000, 10000, 100000]:
+        for i in range(100):
             print(f"test #{i+1}, size {tree_size}")
             tree = nx.random_tree(tree_size)
 
+            rec_tree = tree.copy()
+            iter_tree = tree.copy()
+            maxflow_tree = tree.copy()
+            solver_tree = tree.copy()
+
             tracemalloc.start()
             st = time.time()
-            divconq_mcps = divconq.find_mcps(tree, tree.copy(), 0)
-            divconq_time = time.time() - st
-            current, divconq_mem = tracemalloc.get_traced_memory()
+            rec_mps = iter_rec.find_mps_recursive(rec_tree)
+            rec_time = time.time() - st
+            current, rec_mem = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
             tracemalloc.start()
             st = time.time()
-            maxflow_mcps = maxflow.find_mcps(tree)
+            iter_mps = iter_rec.find_mps_iterative(iter_tree)
+            iter_time = time.time() - st
+            current, iter_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+
+            tracemalloc.start()
+            st = time.time()
+            maxflow_mcps = maxflow.find_mcps(maxflow_tree)
             maxflow_time = time.time() - st
             current, maxflow_mem = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
-            tracemalloc.start()
-            st = time.time()
-            solver_mcps = solver.find_mcps(tree)
-            solver_time = time.time() - st
-            current, solver_mem = tracemalloc.get_traced_memory()
-            tracemalloc.stop()
+            if (tree_size > 1000):
+                solver_mcps = []
+                solver_time = None
+                solver_mem = None
+            else:
+                tracemalloc.start()
+                st = time.time()
+                solver_mcps = solver.find_mcps(solver_tree)
+                solver_time = time.time() - st
+                current, solver_mem = tracemalloc.get_traced_memory()
+                tracemalloc.stop()
 
             with open("mcps_results.txt", "a") as file:
-                file.write(f"{i+1}, {tree_size}, {len(divconq_mcps)}, {len(maxflow_mcps)}, {len(solver_mcps)}\n")
+                file.write(f"{i+1}, {tree_size}, {len(rec_mps)}, {len(iter_mps)} {len(maxflow_mcps)}, {len(solver_mcps)}\n")
             with open("mcps_time.txt", "a") as file:
-                file.write(f"{i+1}, {tree_size}, {divconq_time}, {maxflow_time}, {solver_time}\n")
+                file.write(f"{i+1}, {tree_size}, {rec_time}, {iter_time}, {maxflow_time}, {solver_time}\n")
             with open("mcps_memory.txt", "a") as file:
-                file.write(f"{i+1}, {tree_size}, {divconq_mem}, {maxflow_mem}, {solver_mem}\n")
+                file.write(f"{i+1}, {tree_size}, {rec_mem}, {iter_mem}, {maxflow_mem}, {solver_mem}\n")
 
 
 if __name__ == "__main__":

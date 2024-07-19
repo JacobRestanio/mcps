@@ -4,14 +4,14 @@ import time
 import datetime
 
 
-def find_mcps(tree):
+def find_mcps(T):
     s = -1
     t = -2
-    R, S = nx.bipartite.sets(tree)
+    R, S = nx.bipartite.sets(T)
     flow_vertices = [s] + [t] + list(R) + list(S)
     flow_edges = []
     for i in R:
-        for j in tree[i]:
+        for j in T[i]:
             flow_edges.append((i, j))
 
     f = nx.DiGraph()
@@ -24,8 +24,8 @@ def find_mcps(tree):
 
     flow_value, flow_dict = nx.maximum_flow(f, s, t)
 
-    mcps = [(i, j) for (i, j) in flow_edges if flow_dict[i][j] == 0]
-    return mcps
+    mps = [(i, j) for (i, j) in flow_edges if flow_dict[i][j] == 1]
+    return mps
 
 
 def main():
